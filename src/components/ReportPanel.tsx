@@ -9,9 +9,10 @@ interface ReportPanelProps {
   data: ReportData;
   advisorName: string;
   onClose: () => void;
+  isMobile?: boolean;
 }
 
-const CHART_COLORS = ['#14b882', '#f59e0b', '#6366f1', '#ec4899', '#0ea5e9', '#a78bfa'];
+const CHART_COLORS = ['#14b882', '#f59e0b', '#6366f1', '#ec4899', '#0ea5e9'];
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -27,108 +28,186 @@ function CustomTooltip({ active, payload, label }: any) {
   );
 }
 
-function ChartRenderer({ chart }: { chart: ReportData['charts'][0] }) {
-  const commonProps = {
-    data: chart.data,
-  };
+function ChartRenderer({ chart, compact }: { chart: ReportData['charts'][0]; compact?: boolean }) {
+  const h = compact ? 160 : 200;
 
   switch (chart.type) {
     case 'area':
       return (
-        <ResponsiveContainer width="100%" height={200}>
-          <AreaChart {...commonProps}>
+        <ResponsiveContainer width="100%" height={h}>
+          <AreaChart data={chart.data}>
             <defs>
-              <linearGradient id="areaGrad0" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="ag0" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#14b882" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#14b882" stopOpacity={0}/>
               </linearGradient>
-              <linearGradient id="areaGrad1" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="ag1" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-            <XAxis dataKey="year" tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <XAxis dataKey="year" tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} width={40} />
             <Tooltip content={<CustomTooltip />} />
-            <Area type="monotone" dataKey="value" stroke="#14b882" fill="url(#areaGrad0)" strokeWidth={2} name="实际值" dot={false} connectNulls={false} />
-            <Area type="monotone" dataKey="projected" stroke="#f59e0b" fill="url(#areaGrad1)" strokeWidth={2} strokeDasharray="4 4" name="预测值" dot={false} connectNulls={false} />
+            <Area type="monotone" dataKey="value" stroke="#14b882" fill="url(#ag0)" strokeWidth={2} name="实际值" dot={false} connectNulls={false} />
+            <Area type="monotone" dataKey="projected" stroke="#f59e0b" fill="url(#ag1)" strokeWidth={2} strokeDasharray="4 4" name="预测值" dot={false} connectNulls={false} />
           </AreaChart>
         </ResponsiveContainer>
       );
 
     case 'bar':
       return (
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart {...commonProps} barSize={14}>
+        <ResponsiveContainer width="100%" height={h}>
+          <BarChart data={chart.data} barSize={10}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis dataKey="quarter" tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <XAxis dataKey="quarter" tick={{ fill: '#6b7280', fontSize: 9 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} axisLine={false} tickLine={false} width={30} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ fontSize: '11px', color: '#9ca3af' }} />
-            <Bar dataKey="growth" name="企业增速%" fill="#14b882" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="industry" name="行业均值%" fill="#6366f1" radius={[3, 3, 0, 0]} />
+            <Legend wrapperStyle={{ fontSize: 10, color: '#9ca3af' }} />
+            <Bar dataKey="growth" name="企业增速%" fill="#14b882" radius={[3,3,0,0]} />
+            <Bar dataKey="industry" name="行业均值%" fill="#6366f1" radius={[3,3,0,0]} />
           </BarChart>
         </ResponsiveContainer>
       );
 
     case 'pie':
       return (
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={h}>
           <PieChart>
-            <Pie
-              data={chart.data}
-              cx="50%"
-              cy="50%"
-              innerRadius={55}
-              outerRadius={80}
-              paddingAngle={3}
-              dataKey="value"
-            >
+            <Pie data={chart.data} cx="50%" cy="50%" innerRadius={compact ? 40 : 55} outerRadius={compact ? 60 : 80} paddingAngle={3} dataKey="value">
               {chart.data.map((_: any, idx: number) => (
                 <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
               ))}
             </Pie>
             <Tooltip
-              formatter={(value) => [`${value}%`]}
-              contentStyle={{ background: '#1a1d27', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }}
+              formatter={(value: any) => [`${value}%`]}
+              contentStyle={{ background: '#1a1d27', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }}
             />
-            <Legend
-              formatter={(value) => <span style={{ color: '#9ca3af', fontSize: 12 }}>{value}</span>}
-            />
+            <Legend formatter={(v) => <span style={{ color: '#9ca3af', fontSize: 11 }}>{v}</span>} />
           </PieChart>
         </ResponsiveContainer>
       );
 
     case 'radar':
       return (
-        <ResponsiveContainer width="100%" height={220}>
-          <RadarChart cx="50%" cy="50%" outerRadius={80} data={chart.data}>
+        <ResponsiveContainer width="100%" height={compact ? 180 : 220}>
+          <RadarChart cx="50%" cy="50%" outerRadius={compact ? 60 : 80} data={chart.data}>
             <PolarGrid stroke="rgba(255,255,255,0.08)" />
-            <PolarAngleAxis dataKey="dimension" tick={{ fill: '#6b7280', fontSize: 11 }} />
+            <PolarAngleAxis dataKey="dimension" tick={{ fill: '#6b7280', fontSize: 10 }} />
             <Radar name="头部企业" dataKey="A" stroke="#14b882" fill="#14b882" fillOpacity={0.15} strokeWidth={2} />
             <Radar name="中部企业" dataKey="B" stroke="#f59e0b" fill="#f59e0b" fillOpacity={0.1} strokeWidth={2} />
             <Radar name="您的位置" dataKey="C" stroke="#6366f1" fill="#6366f1" fillOpacity={0.1} strokeWidth={2} />
-            <Legend
-              formatter={(value) => <span style={{ color: '#9ca3af', fontSize: 11 }}>{value}</span>}
-            />
-            <Tooltip
-              contentStyle={{ background: '#1a1d27', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }}
-            />
+            <Legend formatter={(v) => <span style={{ color: '#9ca3af', fontSize: 10 }}>{v}</span>} />
+            <Tooltip contentStyle={{ background: '#1a1d27', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 11 }} />
           </RadarChart>
         </ResponsiveContainer>
       );
 
-    default:
-      return null;
+    default: return null;
   }
 }
 
-export function ReportPanel({ data, advisorName, onClose }: ReportPanelProps) {
+// ── Report content (shared between desktop panel and mobile sheet)
+function ReportContent({ data, advisorName, compact }: { data: ReportData; advisorName: string; compact?: boolean }) {
   return (
-    <div className="w-[480px] flex-shrink-0 border-l border-white/[0.06] flex flex-col bg-[#0d0f18] overflow-hidden">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+    <div className={`${compact ? 'space-y-4' : 'space-y-5'}`}>
+      {/* Title card */}
+      <div className="glass-panel rounded-xl p-4">
+        <h3 className="text-white font-bold text-sm mb-1">{data.title}</h3>
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <span>📅 {new Date(data.generatedAt).toLocaleDateString('zh-CN')}</span>
+          <span>·</span>
+          <span className="text-jade-500">由 {advisorName} 生成</span>
+        </div>
+      </div>
+
+      {/* Key metrics */}
+      <div>
+        <h4 className="text-gray-400 text-xs font-medium uppercase tracking-wide mb-2">关键指标</h4>
+        <div className="grid grid-cols-2 gap-2">
+          {data.sections.filter(s => s.highlight).map(section => (
+            <div key={section.title} className="glass-panel rounded-xl p-3">
+              <div className="text-jade-400 font-bold text-base">{section.highlight}</div>
+              <div className="text-gray-500 text-[11px] mt-0.5">{section.title}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Charts */}
+      {data.charts.map((chart, i) => (
+        <div key={i} className="glass-panel rounded-xl p-4">
+          <h4 className="text-white text-xs font-medium mb-3">{chart.title}</h4>
+          <ChartRenderer chart={chart} compact={compact} />
+        </div>
+      ))}
+
+      {/* Analysis sections */}
+      <div>
+        <h4 className="text-gray-400 text-xs font-medium uppercase tracking-wide mb-2">深度分析</h4>
+        <div className="space-y-2">
+          {data.sections.map(section => (
+            <div key={section.title} className="glass-panel rounded-xl p-3">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-jade-500 text-xs">◆</span>
+                <h5 className="text-white text-xs font-medium">{section.title}</h5>
+              </div>
+              <p className="text-gray-400 text-xs leading-relaxed pl-4">{section.content}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Export */}
+      <button className="w-full py-3 rounded-xl border border-jade-500/30 text-jade-400 text-sm active:bg-jade-500/10 transition-all flex items-center justify-center gap-2">
+        <span>⬇️</span><span>导出 PDF 报告</span>
+      </button>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────
+export function ReportPanel({ data, advisorName, onClose, isMobile }: ReportPanelProps) {
+  if (isMobile) {
+    /* Mobile: full-screen bottom sheet */
+    return (
+      <>
+        {/* Backdrop */}
+        <div className="bottom-sheet-overlay" onClick={onClose} />
+
+        {/* Sheet */}
+        <div className="bottom-sheet">
+          <div className="bottom-sheet-handle" />
+
+          {/* Sheet header */}
+          <div className="px-4 pb-3 flex items-center justify-between flex-shrink-0">
+            <div>
+              <h2 className="text-white font-semibold text-sm flex items-center gap-1.5">
+                <span>📊</span> 可视化分析报告
+              </h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center text-gray-500 active:bg-white/[0.12] text-sm"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
+            <ReportContent data={data} advisorName={advisorName} compact />
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  /* Desktop: side panel */
+  return (
+    <div className="w-[460px] flex-shrink-0 border-l border-white/[0.06] flex flex-col bg-[#0d0f18] overflow-hidden">
+      <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between flex-shrink-0">
         <div>
           <h2 className="text-white font-semibold text-sm flex items-center gap-2">
             <span>📊</span> 可视化分析报告
@@ -137,65 +216,13 @@ export function ReportPanel({ data, advisorName, onClose }: ReportPanelProps) {
         </div>
         <button
           onClick={onClose}
-          className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-gray-500 hover:text-white transition-all"
+          className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] flex items-center justify-center text-gray-500 hover:text-white transition-all text-sm"
         >
           ✕
         </button>
       </div>
-
-      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
-        {/* Report title & meta */}
-        <div className="glass-panel rounded-xl p-4">
-          <h3 className="text-white font-bold text-base mb-1">{data.title}</h3>
-          <div className="flex items-center gap-3 text-xs text-gray-500">
-            <span>📅 {new Date(data.generatedAt).toLocaleDateString('zh-CN')}</span>
-            <span>·</span>
-            <span className="text-jade-500">AI 生成</span>
-          </div>
-        </div>
-
-        {/* Key metrics */}
-        <div>
-          <h4 className="text-gray-400 text-xs font-medium uppercase tracking-wide mb-3">关键指标</h4>
-          <div className="grid grid-cols-2 gap-2">
-            {data.sections.filter(s => s.highlight).map(section => (
-              <div key={section.title} className="glass-panel rounded-xl p-3">
-                <div className="text-jade-400 font-bold text-lg mb-1">{section.highlight}</div>
-                <div className="text-gray-500 text-xs">{section.title}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Charts */}
-        {data.charts.map((chart, i) => (
-          <div key={i} className="glass-panel rounded-xl p-4">
-            <h4 className="text-white text-sm font-medium mb-4">{chart.title}</h4>
-            <ChartRenderer chart={chart} />
-          </div>
-        ))}
-
-        {/* Analysis sections */}
-        <div>
-          <h4 className="text-gray-400 text-xs font-medium uppercase tracking-wide mb-3">深度分析</h4>
-          <div className="space-y-3">
-            {data.sections.map(section => (
-              <div key={section.title} className="glass-panel rounded-xl p-4">
-                <div className="flex items-start gap-2 mb-2">
-                  <span className="text-jade-500 text-sm mt-0.5">◆</span>
-                  <h5 className="text-white text-sm font-medium">{section.title}</h5>
-                </div>
-                <p className="text-gray-400 text-xs leading-relaxed pl-5">{section.content}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Export button */}
-        <button className="w-full py-3 rounded-xl border border-jade-500/30 text-jade-400 text-sm hover:bg-jade-500/10 transition-all flex items-center justify-center gap-2">
-          <span>⬇️</span>
-          <span>导出 PDF 报告</span>
-        </button>
+      <div className="flex-1 overflow-y-auto px-5 py-5">
+        <ReportContent data={data} advisorName={advisorName} />
       </div>
     </div>
   );
