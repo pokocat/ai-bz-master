@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #0f1117;
+  color: #e2e8f0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Chinese ink wash background pattern */
+.ink-bg {
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(20, 184, 130, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(15, 17, 23, 0.95) 0%, transparent 100%);
+}
+
+/* Glowing text effect */
+.glow-text {
+  text-shadow: 0 0 20px rgba(20, 184, 130, 0.6), 0 0 40px rgba(20, 184, 130, 0.3);
+}
+
+.glow-gold {
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 0 40px rgba(245, 158, 11, 0.3);
+}
+
+/* Animated border */
+.animate-border {
+  background: linear-gradient(90deg, transparent, rgba(20, 184, 130, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: borderFlow 3s linear infinite;
+}
+
+@keyframes borderFlow {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Typing dots animation */
+.typing-dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin: 0 2px;
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Chat bubble styles */
+.chat-bubble-user {
+  background: linear-gradient(135deg, #14b882, #0a9469);
+  border-radius: 18px 18px 4px 18px;
+}
+.chat-bubble-ai {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px 18px 18px 4px;
+}
+
+/* Sidebar active item */
+.sidebar-item-active {
+  background: linear-gradient(90deg, rgba(20, 184, 130, 0.2), transparent);
+  border-left: 2px solid #14b882;
+}
+
+/* Report card */
+.report-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+.report-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(20, 184, 130, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Points badge */
+.points-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+/* Advisor card */
+.advisor-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.advisor-card:hover {
+  transform: translateY(-4px);
+}
+.advisor-card.selected {
+  box-shadow: 0 0 0 2px #14b882, 0 0 20px rgba(20, 184, 130, 0.3);
+}
+
+/* Ancient advisor special styling */
+.ancient-style {
+  font-family: 'Georgia', serif;
+  letter-spacing: 0.05em;
+}
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Subscription tier card */
+.tier-card {
+  transition: all 0.3s ease;
+}
+.tier-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.tier-card.featured {
+  border-color: #14b882;
+  box-shadow: 0 0 30px rgba(20, 184, 130, 0.2);
+}
